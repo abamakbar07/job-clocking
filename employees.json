@@ -7,11 +7,11 @@
     "enabled": true,
     "schedule": {
       "startWorkTime": "10:00",
-      "lunchBreakStart": "12:00",
+      "lunchBreakStart": "17:04",
       "lunchBreakEnd": "13:00",
       "endWorkTime": "18:00"
     },
-    "lastJobClockingId": 5887358,
+    "lastJobClockingId": 5888077,
     "lastActivity": "Admin SAP",
     "lastUpdateTime": "2025-02-27T09:31:41.028Z"
   },
