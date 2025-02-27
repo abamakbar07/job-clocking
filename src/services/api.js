@@ -45,6 +45,18 @@ class JobClockingAPI {
       throw new Error(`Failed to stop job: ${error.message}`);
     }
   }
+
+  static async getEmployee(employeeId) {
+    try {
+      const response = await axios.get(
+        `${API_CONFIG.BASE_URL}/GetEmployee/${employeeId}/IDCBT`,
+        { headers: API_CONFIG.HEADERS }
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error(`Failed to fetch employee data: ${error.message}`);
+    }
+  }
 }
 
 module.exports = JobClockingAPI; 

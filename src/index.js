@@ -4,26 +4,10 @@ const moment = require('moment');
 const JobClockingAPI = require('./services/api');
 const { updateConsole } = require('./utils/consoleUtils');
 const { API_CONFIG } = require('./config/constants');
+const { promptUserId } = require('./utils/inputUtils');
 
-// Global state
-const employeeStates = {
-  "4049": {
-    shortId: "4049",
-    name: "Muhamad Afriansyah",
-    adminSapActivityId: 9603,
-    breakActivityId: 9047,
-    enabled: true,
-    schedule: {
-      startWorkTime: "10:00",
-      lunchBreakStart: "12:00",
-      lunchBreakEnd: "13:00",
-      endWorkTime: "18:00"
-    },
-    currentJobClockingId: null,
-    currentActivity: null,
-    lastUpdateTime: null
-  }
-};
+// Initial empty state
+const employeeStates = {};
 
 async function handleJobTransition(employee, action, activityId = null) {
   try {
@@ -57,6 +41,7 @@ async function getUserStatus(employeeId) {
 
     const data = response.data;
     return {
+      name: data.name,
       currentJobClockingId: data.job_clocking_id || 0,
       currentActivity: data.activity_name || 'None',
       lastUpdateTime: moment().toISOString()
@@ -96,12 +81,67 @@ async function updateAllEmployeesStatus() {
   }
 }
 
-function initialize() {
-  console.log('Initializing job clocking automation...');
-  
-  // Initial status update
-  updateAllEmployeesStatus();
+async function initializeEmployee(shortId) {
+  try {
+    // Fetch employee data from API
+    const employeeData = await JobClockingAPI.getEmployee(shortId);
+    
+    if (!employeeData) {
+      throw new Error('Employee not found');
+    }
 
+    // Initialize employee state with API data
+    employeeStates[shortId] = {
+      shortId,
+      name: employeeData.name,
+      adminSapActivityId: 9603, // Default admin activity
+      breakActivityId: 9047,    // Default break activity
+      enabled: true,
+      schedule: {
+        startWorkTime: "10:00",
+        lunchBreakStart: "12:00",
+        lunchBreakEnd: "13:00",
+        endWorkTime: "18:00"
+      },
+      currentJobClockingId: null,
+      currentActivity: null,
+      lastUpdateTime: null
+    };
+
+    // Get current status
+    const status = await getUserStatus(shortId);
+    if (status) {
+      employeeStates[shortId] = {
+        ...employeeStates[shortId],
+        currentJobClockingId: status.currentJobClockingId,
+        currentActivity: status.currentActivity,
+        lastUpdateTime: status.lastUpdateTime
+      };
+    }
+    return true;
+  } catch (error) {
+    console.error(`Failed to initialize employee ${shortId}:`, error.message);
+    return false;
+  }
+}
+
+async function initialize() {
+  console.log('Job Clocking Automation'.green.bold);
+  
+  // Get user input
+  const employeeId = await promptUserId();
+  
+  console.log('\nInitializing and fetching employee data...');
+  
+  const success = await initializeEmployee(employeeId);
+  
+  if (!success) {
+    console.log('\nFailed to fetch employee data. Please try again.'.red);
+    process.exit(1);
+  }
+
+  console.log('\nEmployee data fetched successfully!'.green);
+  
   // Schedule status updates every 5 minutes
   schedule.scheduleJob('*/5 * * * *', updateAllEmployeesStatus);
   
