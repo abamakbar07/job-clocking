@@ -3,7 +3,7 @@ const colors = require('colors');
 const moment = require('moment');
 const { getTimeUntil, formatDuration } = require('./dateUtils');
 
-function createStatusTable(employee, employeeState) {
+function createStatusTable(employee) {
   const statusTable = new Table({
     head: [
       'Event'.cyan,
@@ -38,22 +38,22 @@ function createStatusTable(employee, employeeState) {
       event.time,
       countdown,
       status,
-      employeeState?.currentActivity || 'None'
+      employee.currentActivity || 'None'
     ]);
   });
 
   return statusTable;
 }
 
-function updateConsole(employees, employeeStates) {
+function updateConsole(employeeStates) {
   console.clear();
   console.log('Job Clocking Automation'.green.bold);
   console.log('Current Time:'.cyan, moment().format('M/D/YYYY HH:mm:ss'));
   
-  employees.forEach(employee => {
+  Object.values(employeeStates).forEach(employee => {
     if (employee.enabled) {
       console.log(`\nEmployee: ${employee.name}`.yellow);
-      console.log(createStatusTable(employee, employeeStates[employee.shortId]).toString());
+      console.log(createStatusTable(employee).toString());
     }
   });
 }

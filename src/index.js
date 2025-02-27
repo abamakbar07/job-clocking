@@ -4,10 +4,26 @@ const moment = require('moment');
 const JobClockingAPI = require('./services/api');
 const { updateConsole } = require('./utils/consoleUtils');
 const { API_CONFIG } = require('./config/constants');
-const employees = require('../employees.json');
 
 // Global state
-const employeeStates = {};
+const employeeStates = {
+  "4049": {
+    shortId: "4049",
+    name: "Muhamad Afriansyah",
+    adminSapActivityId: 9603,
+    breakActivityId: 9047,
+    enabled: true,
+    schedule: {
+      startWorkTime: "10:00",
+      lunchBreakStart: "12:00",
+      lunchBreakEnd: "13:00",
+      endWorkTime: "18:00"
+    },
+    currentJobClockingId: null,
+    currentActivity: null,
+    lastUpdateTime: null
+  }
+};
 
 async function handleJobTransition(employee, action, activityId = null) {
   try {
@@ -56,18 +72,17 @@ async function updateAllEmployeesStatus() {
     console.log('\nUpdating employee statuses...');
     let hasUpdates = false;
 
-    for (const employee of employees) {
+    for (const employeeId in employeeStates) {
+      const employee = employeeStates[employeeId];
       if (employee.enabled) {
         const status = await getUserStatus(employee.shortId);
         if (status) {
           hasUpdates = true;
-          employee.lastJobClockingId = status.currentJobClockingId;
-          employee.lastActivity = status.currentActivity;
-          employee.lastUpdateTime = status.lastUpdateTime;
-          
-          employeeStates[employee.shortId] = {
+          employeeStates[employeeId] = {
+            ...employee,
             currentJobClockingId: status.currentJobClockingId,
-            currentActivity: status.currentActivity
+            currentActivity: status.currentActivity,
+            lastUpdateTime: status.lastUpdateTime
           };
         }
       }
@@ -91,7 +106,7 @@ function initialize() {
   schedule.scheduleJob('*/5 * * * *', updateAllEmployeesStatus);
   
   // Update console display
-  setInterval(() => updateConsole(employees, employeeStates), 1000);
+  setInterval(() => updateConsole(employeeStates), 1000);
 }
 
 // Handle graceful shutdown
