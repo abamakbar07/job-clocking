@@ -7,7 +7,7 @@
     "enabled": true,
     "schedule": {
       "startWorkTime": "10:00",
-      "lunchBreakStart": "17:04",
+      "lunchBreakStart": "17:21",
       "lunchBreakEnd": "13:00",
       "endWorkTime": "18:00"
     },
