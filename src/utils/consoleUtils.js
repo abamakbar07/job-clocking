@@ -3,13 +3,14 @@ const colors = require('colors');
 const moment = require('moment');
 const { getTimeUntil, formatDuration } = require('./dateUtils');
 
-function createStatusTable(employee, employeeStates) {
+function createStatusTable(employee, employeeState) {
   const statusTable = new Table({
     head: [
       'Event'.cyan,
       'Scheduled Time'.cyan,
       'Countdown'.cyan,
-      'Status'.cyan
+      'Status'.cyan,
+      'Current Activity'.cyan
     ],
     style: { head: [], border: [] }
   });
@@ -32,13 +33,30 @@ function createStatusTable(employee, employeeStates) {
       status = 'Upcoming'.yellow;
     }
 
-    statusTable.push([event.name, event.time, countdown, status]);
+    statusTable.push([
+      event.name,
+      event.time,
+      countdown,
+      status,
+      employeeState?.currentActivity || 'None'
+    ]);
   });
 
   return statusTable;
 }
 
-// ... rest of console utilities
+function updateConsole(employees, employeeStates) {
+  console.clear();
+  console.log('Job Clocking Automation'.green.bold);
+  console.log('Current Time:'.cyan, moment().format('M/D/YYYY HH:mm:ss'));
+  
+  employees.forEach(employee => {
+    if (employee.enabled) {
+      console.log(`\nEmployee: ${employee.name}`.yellow);
+      console.log(createStatusTable(employee, employeeStates[employee.shortId]).toString());
+    }
+  });
+}
 
 module.exports = {
   createStatusTable,
