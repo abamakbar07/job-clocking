@@ -1,0 +1,34 @@
+[
+  {
+    "shortId": "4049",
+    "name": "Muhamad Afriansyah",
+    "adminSapActivityId": 9603,
+    "breakActivityId": 9047,
+    "enabled": true,
+    "schedule": {
+      "startWorkTime": "10:00",
+      "lunchBreakStart": "12:00",
+      "lunchBreakEnd": "13:00",
+      "endWorkTime": "18:00"
+    },
+    "lastJobClockingId": 5887358,
+    "lastActivity": "Admin SAP",
+    "lastUpdateTime": "2025-02-27T09:31:41.028Z"
+  },
+  {
+    "shortId": "4123",
+    "name": "Andri Setiawan",
+    "adminSapActivityId": 9603,
+    "breakActivityId": 9047,
+    "enabled": true,
+    "schedule": {
+      "startWorkTime": "09:00",
+      "lunchBreakStart": "12:00",
+      "lunchBreakEnd": "13:00",
+      "endWorkTime": "18:00"
+    },
+    "lastJobClockingId": 5886963,
+    "lastActivity": "Admin SAP",
+    "lastUpdateTime": "2025-02-27T09:31:42.107Z"
+  }
+]
